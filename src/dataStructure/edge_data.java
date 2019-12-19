@@ -1,4 +1,7 @@
 package dataStructure;
+
+import java.util.LinkedList;
+
 /**
  * This interface represents the set of operations applicable on a 
  * directional edge(src,dest) in a (directional) weighted graph.
@@ -6,6 +9,8 @@ package dataStructure;
  *
  */
 public interface edge_data {
+	
+	
 	/**
 	 * The id of the source node of this edge.
 	 * @return
@@ -42,4 +47,12 @@ public interface edge_data {
 	 * @param t - the new value of the tag
 	 */
 	public void setTag(int t);
+	
+	public static void main(String[] args) {
+		String s="s1d2w7,s2d4w12,s4d2w5,s2d3w9";
+		System.out.println(s.contains(""));
+		int i=s.indexOf("s2d4w");
+		System.out.println(i);
+		
+	}
 }
