@@ -5,7 +5,7 @@ import utils.Point3D;
 public class Edge implements edge_data{
 	int src,dest;
 	double weight;
-	boolean tag;
+	int tag;
 
 	public static void main(String[] args) {
 		Vertex s=new Vertex(1, new Point3D("2,2,2"));
@@ -24,7 +24,7 @@ public class Edge implements edge_data{
 		this.src=s.key;
 		this.dest=d.key;
 		this.weight=w;
-		this.tag=false;
+		this.tag=0;
 	}
 
 	@Override
@@ -44,7 +44,6 @@ public class Edge implements edge_data{
 
 	@Override
 	public String getInfo() {
-		//return "Edge details:\nSource Point: "+this.src.p.toString()+"\nDestination Point: "+this.dest.p.toString()+"\nWeight: "+this.weight;
 		return "Source:"+this.src+"\nDestination:"+this.dest+"\nWeight:"+this.weight;
 	}
 
@@ -79,12 +78,12 @@ public class Edge implements edge_data{
 
 	@Override
 	public int getTag() {
-		return 0;
+		return this.tag;
 	}
 
 	@Override
 	public void setTag(int t) {
-		return;
+		this.tag=t;
 	}
 
 }
