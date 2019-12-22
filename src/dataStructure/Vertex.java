@@ -11,11 +11,17 @@ public class Vertex implements node_data {
 	int tag;
 	String lastKey;// "lastkey(int),weightpaid(double)"
 
-	public Vertex(int key,Point3D p) {
-		this.key=key;
-		this.p=p;
+	public Vertex(Point3D p) {
+		this.p=new Point3D(p);
 		this.tag=0;
 		this.weight=Integer.MAX_VALUE;
+	}
+	
+	public Vertex(int key,Vertex other) {
+		this.key=key;
+		this.p=new Point3D(other.p);
+		this.weight=Integer.MAX_VALUE;
+		this.tag=0;
 	}
 
 	public static void main(String[] args) {

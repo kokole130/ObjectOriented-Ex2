@@ -20,10 +20,17 @@ public class Edge implements edge_data{
 
 	}
 
-	public Edge(Vertex s,Vertex d,double w) {
-		this.src=s.key;
-		this.dest=d.key;
+	public Edge(int s,int d,double w) {
+		this.src=s;
+		this.dest=d;
 		this.weight=w;
+		this.tag=0;
+	}
+	
+	public Edge(Edge other) {
+		this.dest=other.dest;
+		this.src=other.src;
+		this.weight=other.weight;
 		this.tag=0;
 	}
 
@@ -84,6 +91,12 @@ public class Edge implements edge_data{
 	@Override
 	public void setTag(int t) {
 		this.tag=t;
+	}
+	
+	public boolean equals(Object o) {
+		Edge t=(Edge)o;
+		if(this.src==t.src&&this.dest==t.dest)return true;
+		return false;
 	}
 
 }
