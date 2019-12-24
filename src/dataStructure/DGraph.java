@@ -8,17 +8,18 @@ import utils.Point3D;
 
 
 public class DGraph implements graph{
-	static int keyNum;
-	LinkedList<Vertex> ver;
-	LinkedList<LinkedList<Edge>> edge;
-	static int edgesSize=0;
-	int mc;
+	public int keyNum;
+	public LinkedList<Vertex> ver;
+	public LinkedList<LinkedList<Edge>> edge;
+	public int edgesSize;
+	public int mc;
 
 	public DGraph() {
 		this.ver=new LinkedList<>();
 		this.edge=new LinkedList<LinkedList<Edge>>();
 		this.keyNum=0;
 		this.mc=0;
+		this.edgesSize=0;
 	}
 
 	@Override
@@ -50,11 +51,14 @@ public class DGraph implements graph{
 
 	@Override
 	public void addNode(node_data n) {
-		Vertex tmp=(Vertex)n;
-		tmp.key=keyNum;
-		keyNum++;
-		this.ver.add(tmp);
-		this.edge.add(new LinkedList<Edge>());
+		if(n!=null) {
+			Vertex tmp=(Vertex)n;
+			tmp.key=keyNum;
+			keyNum++;
+			this.ver.add(tmp);
+			this.edge.add(new LinkedList<Edge>());
+			this.mc++;
+		}
 	}
 
 	@Override
@@ -62,14 +66,20 @@ public class DGraph implements graph{
 		if(src<this.edge.size()&&dest<this.edge.size()) {
 			this.edge.get(src).add(new Edge(src,dest,w));
 			this.edgesSize++;
+			this.mc++;
 		}
 	}
 
 	@Override
 	public Collection<node_data> getV() {
-		LinkedList<Vertex> vertmp=new LinkedList<>(this.ver);
-		vertmp.removeAll(Collections.singleton(null));
-		return (Collection)vertmp;
+		if(this.nodeSize()>0) {
+			LinkedList<Vertex> vertmp=new LinkedList<>(this.ver);
+			vertmp.removeAll(Collections.singleton(null));
+			return (Collection)vertmp;
+		}
+		else {
+			return (Collection)new LinkedList<Vertex>();
+		}
 	}
 
 	@Override
@@ -88,8 +98,7 @@ public class DGraph implements graph{
 		}
 		keyNum--;
 		updateEdge(key);
-
-
+		this.mc++;
 		return temp;
 	}
 
@@ -120,12 +129,13 @@ public class DGraph implements graph{
 			else {
 				Edge temp2=new Edge(this.edge.get(src).get(i));
 				this.edge.get(src).remove(i);
+				this.mc++;
 				return temp2;
 			}
 		}
 		return null;
 	}
-	
+
 	public String toString() {
 		System.out.println("Vertex List:");
 		for (int i = 0; i < this.nodeSize(); i++) {
@@ -140,12 +150,12 @@ public class DGraph implements graph{
 			System.out.println();
 			System.out.println();
 			for (int j = 0;this.edge.get(i)!=null&&j<this.edge.get(i).size(); j++) {
-					System.out.println(this.edge.get(i).get(j).getInfo()+" ,");
-				}
+				System.out.println(this.edge.get(i).get(j).getInfo()+" ,");
+			}
 		}
 		return"";
 	}
-	
+
 	@Override
 	public int nodeSize() {
 		return this.ver.size();
@@ -159,5 +169,29 @@ public class DGraph implements graph{
 	@Override
 	public int getMC() {
 		return this.mc;
+	}
+	
+	public int getkeyNum() {
+		return this.keyNum;
+	}
+	
+	public static void main(String[] args) {
+		Vertex v1=new Vertex(new Point3D(2,2,2));
+		//Vertex v2=null;
+		Vertex v3=new Vertex(new Point3D(2,2,2));
+		Vertex v4=new Vertex(new Point3D(2,2,2));
+
+		DGraph g=new DGraph();
+
+		g.addNode(v1);
+	//	g.addNode(v2);
+		g.addNode(v3);
+		g.addNode(v4);
+		
+		
+//		g.connect(0, 1, 10);
+//		g.connect(0, 2, 10);
+		
+		System.out.println(g.getV());
 	}
 }

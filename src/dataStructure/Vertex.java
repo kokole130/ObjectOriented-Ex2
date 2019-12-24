@@ -1,6 +1,5 @@
 package dataStructure;
 
-import java.util.LinkedList;
 
 import utils.Point3D;
 
@@ -9,7 +8,7 @@ public class Vertex implements node_data {
 	int key;
 	Point3D p;
 	int tag;
-	String lastKey;// "lastkey(int),weightpaid(double)"
+	int lastKey;// "lastkey(int),weightpaid(double)"
 
 	public Vertex(Point3D p) {
 		this.p=new Point3D(p);
@@ -24,16 +23,6 @@ public class Vertex implements node_data {
 		this.tag=0;
 	}
 
-	public static void main(String[] args) {
-		Point3D p= new Point3D(2, 3, 4);
-		Vertex tmp = new Vertex(1,p);
-		System.out.println(tmp.getInfo());
-		tmp.setInfo("Vertex:2\n"+ 
-				"Weight:54.5\n"+ 
-				"Point:12,20,35");
-		System.out.println(tmp.getInfo());
-
-	}
 
 	@Override
 	public int getKey() {
@@ -64,6 +53,14 @@ public class Vertex implements node_data {
 	@Override
 	public String getInfo() {
 		return "Vertex:"+key+"\nWeight:"+weight+"\nPoint:"+p;
+	}
+	
+	public int getLastKey() {
+		return this.lastKey;
+	}
+	
+	public void setLastKey(int key) {
+		this.lastKey=key;
 	}
 
 	@Override
@@ -105,5 +102,10 @@ public class Vertex implements node_data {
 	public void setTag(int t) {
 		this.tag=t;
 	}
+	
+	public String toString() {
+		return "Vertex:"+key+" Weight:"+weight+" Point:"+p+"\n";
+	}
+	
 
 }

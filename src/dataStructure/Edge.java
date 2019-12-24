@@ -1,24 +1,11 @@
 package dataStructure;
 
-import utils.Point3D;
 
 public class Edge implements edge_data{
 	int src,dest;
 	double weight;
 	int tag;
 
-	public static void main(String[] args) {
-		Vertex s=new Vertex(1, new Point3D("2,2,2"));
-		Vertex d=new Vertex(2, new Point3D(4,-1,0));
-
-		Edge e=new Edge(s, d, 6.2);
-		System.out.println(e.getInfo());
-		e.setInfo("Source:1\n" + 
-				"Destination:3\n" + 
-				"Weight:75");
-		System.out.println(e.getInfo());
-
-	}
 
 	public Edge(int s,int d,double w) {
 		this.src=s;
@@ -26,7 +13,7 @@ public class Edge implements edge_data{
 		this.weight=w;
 		this.tag=0;
 	}
-	
+
 	public Edge(Edge other) {
 		this.dest=other.dest;
 		this.src=other.src;
@@ -92,11 +79,17 @@ public class Edge implements edge_data{
 	public void setTag(int t) {
 		this.tag=t;
 	}
-	
+
 	public boolean equals(Object o) {
-		Edge t=(Edge)o;
-		if(this.src==t.src&&this.dest==t.dest)return true;
+		if(o!=null) {
+			Edge t=(Edge)o;
+			if(this.src==t.src&&this.dest==t.dest)return true;
+			return false;
+		}
 		return false;
 	}
 
+	public String toString() {
+		return "Source:"+this.src+" Destination:"+this.dest+" Weight:"+this.weight+"\n";
+	}
 }
