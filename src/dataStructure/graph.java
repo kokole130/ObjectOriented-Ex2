@@ -28,13 +28,13 @@ public interface graph {
 	 * @param n
 	 */
 	public void addNode(node_data n);
-/**
- * Connect an edge with weight w between node src to node dest.
- * * Note: this method should run in O(1) time.
- * @param src - the source of the edge.
- * @param dest - the destination of the edge.
- * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
- */
+	/**
+	 * Connect an edge with weight w between node src to node dest.
+	 * * Note: this method should run in O(1) time.
+	 * @param src - the source of the edge.
+	 * @param dest - the destination of the edge.
+	 * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+	 */
 	public void connect(int src, int dest, double w);
 	/**
 	 * This method return a pointer (shallow copy) for the

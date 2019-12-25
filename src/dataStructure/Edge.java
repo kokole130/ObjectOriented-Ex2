@@ -92,4 +92,9 @@ public class Edge implements edge_data{
 	public String toString() {
 		return "Source:"+this.src+" Destination:"+this.dest+" Weight:"+this.weight+"\n";
 	}
+	
+	public Edge copy() {
+		Edge tmp = new Edge(this);
+		return tmp;
+	}
 }

@@ -1,5 +1,6 @@
 package algorithms;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public void init(graph g) {
-		this.graph=(DGraph)g;
+		this.graph=((DGraph)g).copy();
 	}
 
 	@Override
@@ -47,9 +48,17 @@ public class Graph_Algo implements graph_algorithms{
 				}
 			}
 		}
+		tagReset();
 		return true;
 	}
 
+	/**
+	 * This is a recursive function that checking if two point on the graph is connected
+	 * @param src is the source point
+	 * @param dest is the destination point
+	 * @param originalSrc in every itration i want to save the ancestor source
+	 * @return boolean, true if connected and false if they doesn't 
+	 */
 	private boolean isConnected(int src,int dest,int originalSrc) {
 		if(this.graph.edge.get(src).contains(new Edge(src, dest, 10))) return true;
 
@@ -66,8 +75,9 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public double shortestPathDist(int src, int dest) {
-		tagReset();
-		weightReset();
+		if((src<0&&dest<0)||(dest>=this.graph.nodeSize()&&src>=this.graph.nodeSize())) {
+			System.out.println("there is not such as src or dest");
+		}
 		if(this.graph.ver.get(src)==null) {
 			System.out.println("there is not such as src: "+src);
 			return -1;
@@ -77,6 +87,9 @@ public class Graph_Algo implements graph_algorithms{
 			return -1;
 		}
 
+		if(!this.isConnected(src, dest, src)) {
+			return Integer.MAX_VALUE;
+		}
 		this.graph.ver.get(src).setWeight(0);
 		this.graph.ver.get(src).setTag(1);
 		int current=src;
@@ -103,25 +116,32 @@ public class Graph_Algo implements graph_algorithms{
 			}
 			i++;
 		}
-		return this.graph.ver.get(dest).getWeight();
-
+		double res=this.graph.ver.get(dest).getWeight();
+		tagReset();
+		weightReset();
+		return res;
 	}
 
+	/**
+	 * Side function for 'shortestPathDist' that checking what is nearest point to the source that isn't visited
+	 * @param current is the current point we standing on in the current itraction
+	 * @return the key of the nearest point to the source thats not visited
+	 */
 	private int minWeightDest(int current) {
 		int minindex=0;
 		double minWeight=Integer.MAX_VALUE;
-		
+
 		for (int i = 0; i < this.graph.ver.size(); i++) {
 			if(this.graph.ver.get(i)==null) {
 				continue;
 			}
 			double temp=this.graph.ver.get(i).getWeight();
 			//weight of the current edge in 'current' list
-			
+
 			int destTag=this.graph.ver.get(i).getTag();
 			//the tag of the current dest vertex we check
 
-			if((temp<minWeight)&&(destTag!=1)) {
+			if((temp<=minWeight)&&(destTag!=1)) {
 				minWeight=temp;
 				minindex=i;
 			}
@@ -130,6 +150,10 @@ public class Graph_Algo implements graph_algorithms{
 		return minindex;
 	}
 
+	/**
+	 * Function that checking if all the point in this graph were visited
+	 * @return boolean, true if all visited, false if not all visited
+	 */
 	private boolean allVisited() {
 		for (int i = 0; i < this.graph.nodeSize(); i++) {
 			if(this.graph.ver.get(i)!=null&&this.graph.ver.get(i).getTag()==0)return false;
@@ -137,12 +161,20 @@ public class Graph_Algo implements graph_algorithms{
 		return true;
 	}
 
+	/**
+	 * Function tha reset all the weight of the vertexes to infinite(Integer.MAX_VALUE) 
+	 */
 	private void weightReset() {
 		for (int i = 0; i < this.graph.ver.size(); i++) {
-			this.graph.ver.get(i).setWeight(Integer.MAX_VALUE);
+			if(this.graph.ver.get(i)!=null) {
+				this.graph.ver.get(i).setWeight(Integer.MAX_VALUE);
+			}
 		}
 	}
 
+	/**
+	 * Function that reset all the tags in the vertex and Edges in the graph to 0(Not visited)
+	 */
 	private void tagReset() {
 		for (int i = 0; i < this.graph.nodeSize(); i++) {
 			if(this.graph.ver.get(i)!=null) {
@@ -171,26 +203,50 @@ public class Graph_Algo implements graph_algorithms{
 		for (int i = tmp.size()-1; i >= 0; i--) {
 			tmp2.add(tmp.get(i));
 		}
+		tagReset();
+		weightReset();
 		return tmp2;
 	}
 
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-		// TODO Auto-generated method stub
-		return null;
+		Graph_Algo tmp = new Graph_Algo();
+		tmp.graph=this.graph.copy();
+		for (int i = 0; i < tmp.graph.nodeSize(); i++) {
+			boolean exist=false;
+			for (int j = 0; (j<targets.size())&&(!exist); j++) {
+				if(tmp.graph.ver.get(i)!=null && targets.get(j)==i) {
+					exist=true;
+				}
+			}
+			if(!exist) {
+				tmp.graph.removeNode(i);
+			}
+		}
+		
+
+		double min=Integer.MAX_VALUE;
+		LinkedList<node_data> path=new LinkedList<>();
+		for (int i = 0; i < tmp.graph.nodeSize(); i++) {
+			for (int j = 0; j < tmp.graph.nodeSize(); j++) {
+				if(tmp.graph.ver.get(i)!=null&&tmp.graph.ver.get(j)!=null&&i!=j) {
+					if(tmp.shortestPathDist(i, j)<min) {
+						if(tmp.shortestPath(i, j).size()==targets.size()) {
+							min=shortestPathDist(i, j);
+							path=new LinkedList<>(tmp.shortestPath(i, j));						}
+					}
+				}
+			}
+		}
+		return path;
 	}
 
 	@Override
 	public graph copy() {
 		DGraph temp=new DGraph();
-		temp.edge=new LinkedList<>(this.graph.edge);
-		temp.ver=new LinkedList<>(this.graph.ver);
-		temp.keyNum=this.graph.getkeyNum();
-		temp.mc=this.graph.mc;
-		temp.edgesSize=this.graph.edgesSize;
+		temp=this.graph.copy();
 		return temp;
 	}
-
 
 	public static void main(String[] args) {
 		Graph_Algo g=new Graph_Algo();
@@ -207,21 +263,32 @@ public class Graph_Algo implements graph_algorithms{
 		g.graph.addNode(v4);
 		g.graph.addNode(v5);
 
-		g.graph.connect(0,1,10);
-		g.graph.connect(1,2,1);
-		g.graph.connect(0,4,5);
-		g.graph.connect(1,4,2);
-		g.graph.connect(2,3,4);
+		g.graph.connect(1,2,2);
+		g.graph.connect(2,1,6);
+		g.graph.connect(2,0,4);
+		g.graph.connect(2,4,4);
 		g.graph.connect(3,0,7);
-		g.graph.connect(3,2,6);
-		g.graph.connect(4,1,3);
-		g.graph.connect(4,3,2);
+		g.graph.connect(4,1,6);
+		g.graph.connect(4,3,3);
+		g.graph.connect(0,3,5);
+		g.graph.connect(1,3,5);
+		g.graph.connect(0,1,4);
+		g.graph.connect(3,4,2);
+		
+		ArrayList<Vertex> s = new ArrayList<>();
+		s.in
 
 
-		//System.out.println(g.isConnected(4,2,4));
-		List<node_data> s=g.shortestPath(0, 2);
-		for (int i = 0; i < s.size(); i++) {
-			System.out.print(s.get(i).getKey()+",");
-		}
+		
+
+		LinkedList<Integer> s=new LinkedList<>();
+		s.add(0);
+		s.add(1);
+		s.add(3);
+		s.add(4);
+
+
+		System.out.println(g.TSP(s));
+
 	}
 }

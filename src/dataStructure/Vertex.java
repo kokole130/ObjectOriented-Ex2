@@ -107,5 +107,8 @@ public class Vertex implements node_data {
 		return "Vertex:"+key+" Weight:"+weight+" Point:"+p+"\n";
 	}
 	
-
+	public Vertex copy() {
+		Vertex tmp = new Vertex(this.key,this);
+		return tmp;
+	}
 }
