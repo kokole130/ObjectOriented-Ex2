@@ -1,22 +1,27 @@
 package dataStructure;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import utils.Point3D;
 
 
-public class DGraph implements graph{
+public class DGraph implements graph,Serializable{
 	public int keyNum;
-	public LinkedList<Vertex> ver;
-	public LinkedList<LinkedList<Edge>> edge;
+	public ArrayList<Vertex> ver;
+	public HashMap<Integer,HashMap<Integer,Edge>> edge;
 	public int edgesSize;
+	public int nodesSize;
 	public int mc;
 
 	public DGraph() {
-		this.ver=new LinkedList<>();
-		this.edge=new LinkedList<LinkedList<Edge>>();
+		this.ver=new ArrayList<>();
+		this.edge=new HashMap<Integer,HashMap<Integer,Edge>>();
 		this.keyNum=0;
 		this.mc=0;
 		this.edgesSize=0;
@@ -38,12 +43,10 @@ public class DGraph implements graph{
 	@Override
 	public edge_data getEdge(int src, int dest) {
 		if(src<this.edge.size()&&dest<this.edge.size()) {
-			int i=this.edge.get(src).indexOf(new Edge(src, dest, 10));
-			if(i==-1) {
-				return null;
-			}
-			else {
-				return this.edge.get(src).get(i);
+			if(this.ver.get(src)!=null) {
+				if(this.edge.get(src).containsKey(dest)) {
+					return this.edge.get(src).get(dest);
+				}
 			}
 		}
 		return null;
@@ -54,12 +57,13 @@ public class DGraph implements graph{
 		if(n!=null) {
 			Vertex tmp=(Vertex)n;
 			tmp.key=keyNum;
-			keyNum++;
 			this.ver.add(tmp);
-			this.edge.add(new LinkedList<Edge>());
+			this.edge.put(keyNum,new HashMap<Integer,Edge>());
+			nodesSize++;t
+			keyNum++;
 			this.mc++;
 		}
-	}
+	}//this.edge.get(src).get(dest)
 
 	@Override
 	public void connect(int src, int dest, double w) {
@@ -75,8 +79,12 @@ public class DGraph implements graph{
 			System.out.println("there is not such as dest : "+dest);
 			return ;
 		}
+		if(src==dest) {
+			System.out.println("you can't connect the same vertex");
+			return;
+		}
 		if(src<this.edge.size()&&dest<this.edge.size()) {
-			this.edge.get(src).add(new Edge(src,dest,w));
+			this.edge.get(src).put(dest, new Edge(src,dest,w));
 			this.edgesSize++;
 			this.mc++;
 		}
@@ -85,33 +93,32 @@ public class DGraph implements graph{
 	@Override
 	public Collection<node_data> getV() {
 		if(this.nodeSize()>0) {
-			LinkedList<Vertex> vertmp=new LinkedList<>(this.ver);
+			ArrayList<Vertex> vertmp=new ArrayList<>(this.ver);
 			vertmp.removeAll(Collections.singleton(null));
 			return (Collection)vertmp;
 		}
 		else {
-			return (Collection)new LinkedList<Vertex>();
+			return (Collection)new ArrayList<Vertex>();
 		}
 	}
 
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		LinkedList<Edge> edgetmp=new LinkedList<>(this.edge.get(node_id));
-		edgetmp.removeAll(Collections.singleton(null));
-		return (Collection)edgetmp;
+		return (Collection<edge_data>) this.edge.get(node_id);
 	}
 
 	@Override
 	public node_data removeNode(int key) {
-		if(key>=this.nodeSize()||key<0) {
+		if(key>=this.ver.size()||key<0) {
 			System.out.println("Invalid vertex key");
 			return null;
 		}
-			Vertex temp=this.ver.get(key);
-			this.ver.set(key, null);
-			updateEdge(key);
-			this.mc++;
-			return temp;
+		Vertex temp=new Vertex(this.ver.get(key).getKey(),this.ver.get(key));
+		this.ver.set(key, null);
+		nodesSize--;
+		updateEdge(key);
+		this.mc++;
+		return temp;
 	}
 
 	/**
@@ -121,14 +128,17 @@ public class DGraph implements graph{
 	private void updateEdge(int key) {
 		if(key<this.edgeSize()) {
 			for (int i = 0; i < this.edge.size(); i++) {
-				if(i!=key) {
-					int j=this.edge.get(i).indexOf(new Edge(i, key, 10));
-					if(j!=-1) {
-						this.edge.get(i).remove(j);
+				if(this.edge.get(i)!=null) {
+					if(i!=key) {
+						if(this.edge.get(i).containsKey(key)) {
+							this.edge.get(i).remove(key);
+							edgesSize--;
+						}
 					}
 				}
 				else if(i==key) {
-					this.edge.set(i, null);
+					edgesSize=edgesSize-this.edge.get(i).size();
+					this.edge.replace(i, null);
 				}
 			}
 		}
@@ -137,16 +147,14 @@ public class DGraph implements graph{
 	@Override
 	public edge_data removeEdge(int src, int dest) {
 		if(src<this.edge.size()&&dest<this.edge.size()) {
-			Edge temp=new Edge(src, dest, 10);
-			int i=this.edge.get(src).indexOf(temp);
-			if(i==-1) {
-				return null;
-			}
-			else {
-				Edge temp2=new Edge(this.edge.get(src).get(i));
-				this.edge.get(src).remove(i);
-				this.mc++;
-				return temp2;
+			if(this.ver.get(src)!=null) {
+				if(this.edge.get(src).containsKey(dest)) {
+					Edge temp2=new Edge(this.edge.get(src).get(dest));
+					this.edge.get(src).remove(dest);
+					edgesSize--;
+					this.mc++;
+					return temp2;
+				}
 			}
 		}
 		return null;
@@ -168,8 +176,11 @@ public class DGraph implements graph{
 			System.out.print("list number "+i+":");
 			System.out.println();
 			System.out.println();
-			for (int j = 0;this.edge.get(i)!=null&&j<this.edge.get(i).size(); j++) {
-				System.out.println(this.edge.get(i).get(j).getInfo()+" ,");
+			for (int j = 0;this.edge.get(i)!=null&&j<this.edge.size(); j++) {
+				if(this.edge.get(i).containsKey(j)) {
+					System.out.println(this.edge.get(i).get(j).getInfo()+" ,");
+					System.out.println();
+				}
 			}
 		}
 		return"";
@@ -185,12 +196,19 @@ public class DGraph implements graph{
 
 		for (int i = 0; i < this.nodeSize(); i++) {
 			tmp.ver.add(this.ver.get(i).copy());
-			tmp.edge.add(new LinkedList<Edge>());
+			tmp.edge.put(i,new HashMap<Integer,Edge>());
 		}
 
 		for (int i = 0; i < this.edge.size(); i++) {
-			for (int j = 0; j < this.edge.get(i).size(); j++) {
-				tmp.edge.get(i).add(this.edge.get(i).get(j).copy());
+			for (int j = 0; j < this.edge.size(); j++) {
+				if(this.ver.get(i)==null) {
+					tmp.edge.put(i, null);
+				}
+				else {
+					if(this.edge.get(i).containsKey(j)) {
+						tmp.edge.get(i).put(this.edge.get(i).get(j).getDest(),this.edge.get(i).get(j).copy());
+					}
+				}
 			}
 		}
 
@@ -202,8 +220,9 @@ public class DGraph implements graph{
 	}
 
 	@Override
+
 	public int nodeSize() {
-		return this.ver.size();
+		return this.nodesSize;
 	}
 
 	@Override
@@ -233,10 +252,16 @@ public class DGraph implements graph{
 		g.addNode(v3);
 		g.addNode(v4);
 
+		HashMap<Integer, HashMap<Integer,Edge>> s = new HashMap<>();
+		s.put(0, new HashMap<Integer,Edge>());
+		s.put(1, new HashMap<Integer,Edge>());
 
+		s.put(2, new HashMap<Integer,Edge>());
+		s.get(2).put(3, new Edge(2, 3, 10));
+		s.put(3, new HashMap<Integer,Edge>());
 		//		g.connect(0, 1, 10);
 		//		g.connect(0, 2, 10);
 
-		System.out.println(g.getV());
+		System.out.println(s);
 	}
 }

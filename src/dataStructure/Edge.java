@@ -1,11 +1,16 @@
 package dataStructure;
 
+import java.io.Serializable;
 
-public class Edge implements edge_data{
+public class Edge implements edge_data,Serializable{
 	int src,dest;
 	double weight;
 	int tag;
-
+	
+	public static void main(String[] args) {
+		Edge e=new Edge(1,2,5);
+		System.out.println(e.getInfo());
+	}
 
 	public Edge(int s,int d,double w) {
 		this.src=s;

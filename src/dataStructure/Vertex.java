@@ -1,15 +1,22 @@
 package dataStructure;
 
 
+import java.io.Serializable;
+
 import utils.Point3D;
 
-public class Vertex implements node_data {
+public class Vertex implements node_data,Serializable {
 	double weight;
 	int key;
 	Point3D p;
 	int tag;
 	int lastKey;// "lastkey(int),weightpaid(double)"
 
+	public static void main(String[] args) {
+		Vertex v=new Vertex(new Point3D(2,2,2));
+System.out.println(v.getInfo());
+	}
+	
 	public Vertex(Point3D p) {
 		this.p=new Point3D(p);
 		this.tag=0;
