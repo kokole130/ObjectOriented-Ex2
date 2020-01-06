@@ -233,20 +233,5 @@ public class Point3D implements Serializable
         _x = (center.x() +  radius * Math.cos(a+angle));
         _y = (center.y() +  radius * Math.sin(a+angle));
     }
-    
-   ////added set methods///
-    public void setX(double x) {
-    	this._x=x;
-    }
-    public void setY(double y) {
-    	this._y=y;
-    }
-    public void setZ(double z) {
-    	this._z=z;
-    }
-    public static void main(String[] args) {
-		Point3D p=new Point3D(3,4,3);
-		System.out.println(p);
-	}
 }
 

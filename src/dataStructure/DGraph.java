@@ -6,19 +6,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
-import utils.Point3D;
 
 
 public class DGraph implements graph,Serializable{
 	public int keyNum;
 	public ArrayList<Vertex> ver;
 	public HashMap<Integer,HashMap<Integer,Edge>> edge;
-	public int edgesSize;
-	public int nodesSize;
+	private int edgesSize;
+	private int nodesSize;
 	public int mc;
-
+	
+	/**
+	 * a constructor that initializing new DGraph and set default variables.
+	 */
+	
 	public DGraph() {
 		this.ver=new ArrayList<>();
 		this.edge=new HashMap<Integer,HashMap<Integer,Edge>>();
@@ -26,7 +28,13 @@ public class DGraph implements graph,Serializable{
 		this.mc=0;
 		this.edgesSize=0;
 	}
-
+	
+	/**
+	 * return the node_data by the node_id,
+	 * @param key - the node_id
+	 * @return the node_data by the node_id, null if none.
+	 */
+	
 	@Override
 	public node_data getNode(int key) {
 		if(key<this.ver.size()) {
@@ -39,7 +47,15 @@ public class DGraph implements graph,Serializable{
 			return null;
 		}
 	}
-
+	
+	/**
+	 * return the data of the edge (src,dest), null if none.
+	 * Note: this method should run in O(1) time.
+	 * @param src
+	 * @param dest
+	 * @return edge with source - src and destination - dest.
+	 */
+	
 	@Override
 	public edge_data getEdge(int src, int dest) {
 		if(src<this.edge.size()&&dest<this.edge.size()) {
@@ -51,7 +67,13 @@ public class DGraph implements graph,Serializable{
 		}
 		return null;
 	}
-
+	
+	/**
+	 * add a new node to the graph with the given node_data.
+	 * Note: this method should run in O(1) time.
+	 * @param n - node to add
+	 */
+	
 	@Override
 	public void addNode(node_data n) {
 		if(n!=null) {
@@ -59,12 +81,19 @@ public class DGraph implements graph,Serializable{
 			tmp.key=keyNum;
 			this.ver.add(tmp);
 			this.edge.put(keyNum,new HashMap<Integer,Edge>());
-			nodesSize++;t
+			nodesSize++;
 			keyNum++;
 			this.mc++;
 		}
-	}//this.edge.get(src).get(dest)
-
+	}
+	
+	/**
+	 * Connect an edge with weight w between node src to node dest in O(1) running time.
+	 * @param src - the source of the edge.
+	 * @param dest - the destination of the edge.
+	 * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+	 */
+	
 	@Override
 	public void connect(int src, int dest, double w) {
 		if((src<0&&dest<0)||(dest>=this.nodeSize()&&src>=this.nodeSize())) {
@@ -89,7 +118,13 @@ public class DGraph implements graph,Serializable{
 			this.mc++;
 		}
 	}
-
+	
+	/**
+	 * This method return a pointer (shallow copy) for the
+	 * collection representing all the nodes in the graph in O(1) running time. 
+	 * @return Collection<node_data>
+	 */
+	
 	@Override
 	public Collection<node_data> getV() {
 		if(this.nodeSize()>0) {
@@ -101,12 +136,32 @@ public class DGraph implements graph,Serializable{
 			return (Collection)new ArrayList<Vertex>();
 		}
 	}
-
+	
+	/**
+	 * This method return a pointer (shallow copy) for the
+	 * collection representing all the edges getting out of 
+	 * the given node (all the edges starting (source) at the given node) in  O(1) running time. 
+	 * @return Collection<edge_data>
+	 */
+	
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		return (Collection<edge_data>) this.edge.get(node_id);
+		if(node_id<this.ver.size()) {
+			if(this.edge.get(node_id)!=null) {
+				return new LinkedList<edge_data>(this.edge.get(node_id).values());
+			}
+		}
+		return null;
 	}
-
+	
+	/**
+	 * Delete the node (with the given ID) from the graph -
+	 * and removes all edges which starts or ends at this node in O(n) running time,
+	 * |V|=n, as all the edges should be removed.
+	 * @return the data of the removed node (null if none). 
+	 * @param key
+	 */
+	
 	@Override
 	public node_data removeNode(int key) {
 		if(key>=this.ver.size()||key<0) {
@@ -122,8 +177,8 @@ public class DGraph implements graph,Serializable{
 	}
 
 	/**
-	 * 
-	 * @param key
+	 * Side function that removes all the edges associated with key - source and destination.
+	 * @param key - the vertex that removed.
 	 */
 	private void updateEdge(int key) {
 		if(key<this.edgeSize()) {
@@ -135,15 +190,23 @@ public class DGraph implements graph,Serializable{
 							edgesSize--;
 						}
 					}
+					else if(i==key) {
+						edgesSize=edgesSize-this.edge.get(i).size();
+						this.edge.replace(i, null);
+					}
 				}
-				else if(i==key) {
-					edgesSize=edgesSize-this.edge.get(i).size();
-					this.edge.replace(i, null);
-				}
+
 			}
 		}
 	}
-
+	
+	/**
+	 * Delete the edge from the graph,in O(1) running time.
+	 * @param src - key source
+	 * @param dest - key destination
+	 * @return the data of the removed edge (null if none).
+	 */
+	
 	@Override
 	public edge_data removeEdge(int src, int dest) {
 		if(src<this.edge.size()&&dest<this.edge.size()) {
@@ -161,7 +224,7 @@ public class DGraph implements graph,Serializable{
 	}
 
 	/**
-	 * 
+	 * Side function that returns all the details of this graph as a string.
 	 */
 	public String toString() {
 		System.out.println("Vertex List:");
@@ -187,24 +250,28 @@ public class DGraph implements graph,Serializable{
 	}
 
 	/**
-	 * Function that do deep copy to graph
+	 * Function that do deep copy to this graph
 	 * @return the graph that we copy
 	 */
 	public DGraph copy() {
 		DGraph tmp = new DGraph();
 		tmp.keyNum=this.keyNum;
 
-		for (int i = 0; i < this.nodeSize(); i++) {
-			tmp.ver.add(this.ver.get(i).copy());
-			tmp.edge.put(i,new HashMap<Integer,Edge>());
+		for (int i = 0; i < this.ver.size(); i++) {
+			if(this.ver.get(i)!=null) {
+				tmp.ver.add(this.ver.get(i).copy());
+				tmp.edge.put(i,new HashMap<Integer,Edge>());
+			}
+			else {
+				tmp.ver.add(null);
+				tmp.edge.put(i,null);
+
+			}
 		}
 
 		for (int i = 0; i < this.edge.size(); i++) {
 			for (int j = 0; j < this.edge.size(); j++) {
-				if(this.ver.get(i)==null) {
-					tmp.edge.put(i, null);
-				}
-				else {
+				if(this.ver.get(i)!=null) {
 					if(this.edge.get(i).containsKey(j)) {
 						tmp.edge.get(i).put(this.edge.get(i).get(j).getDest(),this.edge.get(i).get(j).copy());
 					}
@@ -213,55 +280,46 @@ public class DGraph implements graph,Serializable{
 		}
 
 		tmp.edgesSize=this.edgesSize;
-
+		tmp.nodesSize=this.nodesSize;
 		tmp.mc=this.mc;
 
 		return tmp;
 	}
 
 	@Override
-
+	
+	/** return the number of vertices (nodes) in the graph in O(1) running time.
+	 */
+	
 	public int nodeSize() {
 		return this.nodesSize;
 	}
-
+	
+	/** 
+	 * return the number of edges (assume directional graph) in O(1) running time.
+	 */
+	
 	@Override
 	public int edgeSize() {
 		return this.edgesSize;
 	}
-
+	
+	/**
+	 * return the Mode Count - for testing changes in the graph.
+	 */
+	
 	@Override
 	public int getMC() {
 		return this.mc;
 	}
-
+	
+	/**
+	 * return the current key number.
+	 * @return specific integer key.
+	 */
+	
 	public int getkeyNum() {
 		return this.keyNum;
 	}
 
-	public static void main(String[] args) {
-		Vertex v1=new Vertex(new Point3D(2,2,2));
-		//Vertex v2=null;
-		Vertex v3=new Vertex(new Point3D(2,2,2));
-		Vertex v4=new Vertex(new Point3D(2,2,2));
-
-		DGraph g=new DGraph();
-
-		g.addNode(v1);
-		//	g.addNode(v2);
-		g.addNode(v3);
-		g.addNode(v4);
-
-		HashMap<Integer, HashMap<Integer,Edge>> s = new HashMap<>();
-		s.put(0, new HashMap<Integer,Edge>());
-		s.put(1, new HashMap<Integer,Edge>());
-
-		s.put(2, new HashMap<Integer,Edge>());
-		s.get(2).put(3, new Edge(2, 3, 10));
-		s.put(3, new HashMap<Integer,Edge>());
-		//		g.connect(0, 1, 10);
-		//		g.connect(0, 2, 10);
-
-		System.out.println(s);
-	}
 }
