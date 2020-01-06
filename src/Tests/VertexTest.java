@@ -1,18 +1,19 @@
-package JunitTests;
+package Tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import dataStructure.Edge;
+import dataStructure.Vertex;
+import utils.Point3D;
 
-public class EdgeTest {
 
+public class VertexTest {
 	static int i=1;
-	Edge e=new Edge(1,2,5);
+	Vertex v=new Vertex(new Point3D(2,2,2));
 	
 	@BeforeClass
 	public static void bfrClass() {
@@ -29,26 +30,24 @@ public class EdgeTest {
 		System.out.println("Test number "+i);
 		i++;
 	}
-	
 	@Test
 	void testGetInfo() {
-		assertEquals("Source:1\n" + 
-				"Destination:2\n" + 
-				"Weight:5.0" 
-				, e.getInfo());
+		assertEquals("Vertex:0\n" + 
+				"Weight:2.147483647E9\n" + 
+				"Point:2.0,2.0,2.0" 
+				, v.getInfo());
 	}
 	
 	@Test
 	void testSetInfo() {
-		String tmp=e.getInfo();
-		Edge g=new Edge(0, 0, 1);
-		g.setInfo(tmp);
-		assertEquals(e.getInfo(), g.getInfo());
+		String tmp=v.getInfo();
+		Vertex t=new Vertex(new Point3D(0,0,0));
+		t.setInfo(tmp);
+		assertEquals(t.getInfo(), v.getInfo());
 	}
-	
 	@Test
 	void testCopy() {
-		Edge g=e.copy();
-		assertEquals(e.getInfo(), g.getInfo());
+		Vertex tmp=v.copy();
+		assertEquals(v.getInfo(), tmp.getInfo());
 	}
 }
